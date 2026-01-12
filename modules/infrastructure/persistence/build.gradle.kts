@@ -18,3 +18,11 @@ dependencies {
     }
     testImplementation(libs.database.h2)
 }
+
+// JPA Lazy Loading을 위한 final 문제를 해결하기 위해 추가
+allOpen {
+    annotation("jakarta.persistence.Entity")
+    annotation("jakarta.persistence.MappedSuperclass")
+    annotation("jakarta.persistence.Embeddable")
+}
+

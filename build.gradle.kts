@@ -91,6 +91,8 @@ project(":modules:infrastructure") {
         apply(plugin = "org.springframework.boot")
         apply(plugin = "io.spring.dependency-management")
         apply(plugin = "org.jetbrains.kotlin.plugin.spring")
+        //  코틀린에서 JPA를 사용할 때 발생하는 기본생성자 문제를 해결하기 위해 추가
+        apply(plugin = "kotlin-jpa")
     }
 }
 
