@@ -2,8 +2,8 @@ package im.bigs.pg.application.payment.service
 
 import im.bigs.pg.application.partner.port.out.FeePolicyOutPort
 import im.bigs.pg.application.partner.port.out.PartnerOutPort
-import im.bigs.pg.application.payment.port.`in`.PaymentUseCase
 import im.bigs.pg.application.payment.port.`in`.PaymentCommand
+import im.bigs.pg.application.payment.port.`in`.PaymentUseCase
 import im.bigs.pg.application.payment.port.out.PaymentOutPort
 import im.bigs.pg.application.pg.port.out.PgApproveRequest
 import im.bigs.pg.application.pg.port.out.PgClientOutPort
@@ -24,11 +24,7 @@ class PaymentService(
     private val paymentRepository: PaymentOutPort,
     private val pgClients: List<PgClientOutPort>,
 ) : PaymentUseCase {
-    /**
-     * 결제 승인/수수료 계산/저장을 순차적으로 수행합니다.
-     * - 현재 예시 구현은 하드코드된 수수료(3% + 100)로 계산합니다.
-     * - 과제: 제휴사별 수수료 정책을 적용하도록 개선해 보세요.
-     */
+
     override fun pay(command: PaymentCommand): Payment {
         val partner = partnerRepository.findById(command.partnerId)
             ?: throw IllegalArgumentException("Partner not found: ${command.partnerId}")
@@ -46,13 +42,25 @@ class PaymentService(
                 productName = command.productName,
             ),
         )
-        val hardcodedRate = java.math.BigDecimal("0.0300")
-        val hardcodedFixed = java.math.BigDecimal("100")
-        val (fee, net) = FeeCalculator.calculateFee(command.amount, hardcodedRate, hardcodedFixed)
+
+        // 1. 승인 시점 기준 정책 조회
+        val policy = feePolicyRepository.findEffectivePolicy(
+            partnerId = partner.id,
+            at = approve.approvedAt
+        ) ?: throw IllegalStateException("Fee policy not found for partner ${partner.id}")
+
+        // 2. 정책 기반 수수료 계산
+        val (fee, net) = FeeCalculator.calculateFee(
+            amount = command.amount,
+            rate = policy.percentage,
+            fixed = policy.fixedFee
+        )
+
+        // 3. 정책 기반 결제 엔티티 생성
         val payment = Payment(
             partnerId = partner.id,
             amount = command.amount,
-            appliedFeeRate = hardcodedRate,
+            appliedFeeRate = policy.percentage,
             feeAmount = fee,
             netAmount = net,
             cardBin = command.cardBin,
@@ -65,3 +73,5 @@ class PaymentService(
         return paymentRepository.save(payment)
     }
 }
+
+
