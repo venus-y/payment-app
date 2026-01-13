@@ -4,6 +4,7 @@ import im.bigs.pg.application.pg.port.out.PgApproveRequest
 import im.bigs.pg.application.pg.port.out.PgApproveResult
 import im.bigs.pg.application.pg.port.out.PgClientOutPort
 import im.bigs.pg.domain.payment.PaymentStatus
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 import java.time.ZoneOffset
@@ -16,6 +17,7 @@ import kotlin.random.Random
  * - 실제 네트워크 호출은 없으며, 시나리오 이해를 위한 더미 구성입니다.
  */
 @Component
+@Profile("mock-pg")
 class MockPgClient : PgClientOutPort {
     override fun supports(partnerId: Long): Boolean = partnerId % 2L == 1L
 
