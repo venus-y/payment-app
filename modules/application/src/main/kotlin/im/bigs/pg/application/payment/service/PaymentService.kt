@@ -67,7 +67,7 @@ class PaymentService(
             cardLast4 = command.cardLast4,
             approvalCode = approve.approvalCode,
             approvedAt = approve.approvedAt,
-            status = PaymentStatus.APPROVED,
+            status = approve.status,
         )
 
         return paymentRepository.save(payment)
