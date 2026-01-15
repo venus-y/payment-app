@@ -13,6 +13,9 @@ dependencies {
     implementation(projects.modules.external.pgClient)
     implementation(libs.spring.boot.starter.jpa)
     implementation(libs.bundles.bootstrap)
+    // API 문서화를 위해 추가
+    // Source: https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-ui
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
     testImplementation(libs.bundles.test)
     testImplementation(libs.spring.boot.starter.test) {
         exclude(module = "mockito-core")
