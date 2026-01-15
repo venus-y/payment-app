@@ -21,6 +21,7 @@ import java.time.LocalDateTime
 import java.time.ZoneOffset
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 class PaymentServiceTest {
     private val partnerRepo = mockk<PartnerOutPort>()
@@ -29,7 +30,7 @@ class PaymentServiceTest {
     private val pgClient = object : PgClientOutPort {
         override fun supports(partnerId: Long) = true
         override fun approve(request: PgApproveRequest) =
-            PgApproveResult("APPROVAL-123", LocalDateTime.of(2024,1,1,0,0), PaymentStatus.APPROVED)
+            PgApproveResult("APPROVAL-123", LocalDateTime.of(2024, 1, 1, 0, 0), PaymentStatus.APPROVED)
     }
 
     @Test
@@ -51,5 +52,58 @@ class PaymentServiceTest {
         assertEquals(BigDecimal("400"), res.feeAmount)
         assertEquals(BigDecimal("9600"), res.netAmount)
         assertEquals(PaymentStatus.APPROVED, res.status)
+    }
+
+    @Test
+    @DisplayName("파트너가 없으면 예외가 발생한다")
+    fun `파트너 없음 예외`() {
+        val service = PaymentService(partnerRepo, feeRepo, paymentRepo, listOf(pgClient))
+        every { partnerRepo.findById(1L) } returns null
+
+        val cmd = PaymentCommand(partnerId = 1L, amount = BigDecimal("10000"))
+
+        assertFailsWith<IllegalArgumentException> {
+            service.pay(cmd)
+        }
+    }
+
+    @Test
+    @DisplayName("비활성 파트너는 결제할 수 없다")
+    fun `비활성 파트너 예외`() {
+        val service = PaymentService(partnerRepo, feeRepo, paymentRepo, listOf(pgClient))
+        every { partnerRepo.findById(1L) } returns Partner(1L, "TEST", "Test", false)
+
+        val cmd = PaymentCommand(partnerId = 1L, amount = BigDecimal("10000"))
+
+        assertFailsWith<IllegalArgumentException> {
+            service.pay(cmd)
+        }
+    }
+
+    @Test
+    @DisplayName("지원하는 PG 클라이언트가 없으면 예외가 발생한다")
+    fun `지원 PG 없음 예외`() {
+        val service = PaymentService(partnerRepo, feeRepo, paymentRepo, listOf())
+        every { partnerRepo.findById(1L) } returns Partner(1L, "TEST", "Test", true)
+
+        val cmd = PaymentCommand(partnerId = 1L, amount = BigDecimal("10000"))
+
+        assertFailsWith<IllegalStateException> {
+            service.pay(cmd)
+        }
+    }
+
+    @Test
+    @DisplayName("수수료 정책이 없으면 예외가 발생한다")
+    fun `수수료 정책 없음 예외`() {
+        val service = PaymentService(partnerRepo, feeRepo, paymentRepo, listOf(pgClient))
+        every { partnerRepo.findById(1L) } returns Partner(1L, "TEST", "Test", true)
+        every { feeRepo.findEffectivePolicy(1L, any()) } returns null
+
+        val cmd = PaymentCommand(partnerId = 1L, amount = BigDecimal("10000"))
+
+        assertFailsWith<IllegalStateException> {
+            service.pay(cmd)
+        }
     }
 }
