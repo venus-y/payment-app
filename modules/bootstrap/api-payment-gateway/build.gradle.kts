@@ -19,4 +19,7 @@ dependencies {
     }
     testImplementation(libs.spring.mockk)
     testImplementation(libs.database.h2)
+    // 패키지 간 의존의 방향을 검증하기 위해 추가
+    testImplementation("com.tngtech.archunit:archunit:1.4.1")
+    testImplementation("com.tngtech.archunit:archunit-junit5:1.4.1")
 }
