@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import im.bigs.pg.application.payment.port.`in`.PaymentCommand
 import im.bigs.pg.application.payment.port.out.PaymentOutPort
 import im.bigs.pg.application.payment.port.out.PaymentQuery
-import im.bigs.pg.infra.persistence.payment.repository.PaymentJpaRepository
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -28,7 +27,7 @@ class PaymentIntegrationTest {
     lateinit var objectMapper: ObjectMapper
 
     @Autowired
-    lateinit var paymentOutPort : PaymentOutPort
+    lateinit var paymentOutPort: PaymentOutPort
 
     @Test
     fun `결제 생성 시 DB에 정책 기반 금액이 저장된다`() {
@@ -57,5 +56,4 @@ class PaymentIntegrationTest {
         assertEquals(BigDecimal("235"), saved.feeAmount)
         assertEquals(BigDecimal("9765"), saved.netAmount)
     }
-
 }

@@ -14,14 +14,12 @@ class ArchitectureTest {
     @Test
     fun `계층간 의존성 방향 검사`() {
 
-
         layeredArchitecture().consideringOnlyDependenciesInLayers()
             .layer("Domain").definedBy("..domain..")
             .layer("Application").definedBy("..application..")
             .layer("Infrastructure").definedBy("..infra..")
             .layer("External").definedBy("..external..")
             .layer("Bootstrap").definedBy("..api..", "..bootstrap..")
-
             .whereLayer("Domain").mayOnlyBeAccessedByLayers(
                 "Application", "Infrastructure", "External", "Bootstrap"
             )
@@ -30,7 +28,6 @@ class ArchitectureTest {
             )
             .whereLayer("Infrastructure").mayOnlyBeAccessedByLayers("Bootstrap")
             .whereLayer("External").mayOnlyBeAccessedByLayers("Bootstrap")
-
             .whereLayer("Domain").mayNotAccessAnyLayer()
             .whereLayer("Application").mayOnlyAccessLayers("Domain")
             .whereLayer("Infrastructure").mayOnlyAccessLayers("Application", "Domain")
@@ -38,7 +35,6 @@ class ArchitectureTest {
             .whereLayer("Bootstrap").mayOnlyAccessLayers(
                 "Application", "Infrastructure", "External", "Domain"
             )
-
             .check(classes)
     }
 }

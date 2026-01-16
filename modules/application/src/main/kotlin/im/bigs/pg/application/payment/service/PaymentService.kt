@@ -9,7 +9,6 @@ import im.bigs.pg.application.pg.port.out.PgApproveRequest
 import im.bigs.pg.application.pg.port.out.PgClientOutPort
 import im.bigs.pg.domain.calculation.FeeCalculator
 import im.bigs.pg.domain.payment.Payment
-import im.bigs.pg.domain.payment.PaymentStatus
 import org.springframework.stereotype.Service
 
 /**
@@ -73,5 +72,3 @@ class PaymentService(
         return paymentRepository.save(payment)
     }
 }
-
-

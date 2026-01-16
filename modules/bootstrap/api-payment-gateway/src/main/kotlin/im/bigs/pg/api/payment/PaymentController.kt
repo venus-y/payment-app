@@ -52,7 +52,7 @@ class PaymentController(
         @io.swagger.v3.oas.annotations.parameters.RequestBody(
             description = "결제 생성 요청 본문",
             required = true,
-            content = [Content (schema = Schema(implementation = CreatePaymentRequest::class))]
+            content = [Content(schema = Schema(implementation = CreatePaymentRequest::class))]
         )
         @RequestBody req: CreatePaymentRequest
     ): ResponseEntity<PaymentResponse> {

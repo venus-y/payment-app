@@ -12,6 +12,7 @@ plugins {
 allprojects {
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
     apply(plugin = "org.jetbrains.kotlin.jvm")
+    apply(plugin = "jacoco")
 
     group = "kr.thedream"
     version = "0.0.1-SNAPSHOT"
@@ -57,6 +58,20 @@ allprojects {
 
     tasks.withType<Test> {
         useJUnitPlatform()
+        finalizedBy("jacocoTestReport")
+    }
+
+    extensions.configure<JacocoPluginExtension> {
+        toolVersion = "0.8.12"
+    }
+
+    tasks.withType<JacocoReport> {
+        dependsOn(tasks.withType<Test>())
+
+        reports {
+            xml.required.set(true)
+            html.required.set(true)
+        }
     }
 }
 

@@ -9,4 +9,3 @@ data class TestPgResponse(
     val amount: Long,
     val status: String,
 )
-
