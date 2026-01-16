@@ -16,6 +16,11 @@ dependencies {
     // API 문서화를 위해 추가
     // Source: https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-ui
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
+    // 운영 메트릭 수집을 위해 추가
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    runtimeOnly("io.micrometer:micrometer-registry-prometheus")
+    // 외부 DB 연동을 위해 추가
+    runtimeOnly(libs.database.mariadb)
     testImplementation(libs.bundles.test)
     testImplementation(libs.spring.boot.starter.test) {
         exclude(module = "mockito-core")

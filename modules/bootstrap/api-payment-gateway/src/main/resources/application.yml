@@ -1,11 +1,16 @@
 spring:
   profiles:
     active: test-pg
+#  datasource:
+#    url: jdbc:h2:mem:pgdb;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+#    driver-class-name: org.h2.Driver
+#    username: sa
+#    password: ""
   datasource:
-    url: jdbc:h2:mem:pgdb;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-    driver-class-name: org.h2.Driver
-    username: sa
-    password: ""
+    url: jdbc:mariadb://localhost:3307/payment
+    driver-class-name: org.mariadb.jdbc.Driver
+    username: root
+    password: geum0830@
   jpa:
     hibernate:
       ddl-auto: update
@@ -23,4 +28,11 @@ pg:
   test:
     api-key: 11111111-1111-4111-8111-111111111111
     iv: AAAAAAAAAAAAAAAA
-
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,metrics,prometheus"
+  endpoint:
+    health:
+      show-details: "always"
